@@ -2,66 +2,56 @@
 const datbase = require('./datbase');
 const allItemsInfo = datbase.loadAllItems();
 const promotionsInfo = datbase.loadPromotions();
-const sameBarcodeSet = [{ barcode: 'ITEM000001', count: 5 },
-  					  { barcode: 'ITEM000003', count: 2 },
-  					  { barcode: 'ITEM000005', count: 3 }];
+const sameBarcodeSet = [ { barcode: 'ITEM000001',
+    count: 5,
+    offset: 1,
+    giftCount: 1,
+    site: 1,
+    afterPrice: 12,
+    beforePrice: 15 },
+  { barcode: 'ITEM000003',
+    count: 2,
+    offset: 0,
+    giftCount: -1,
+    site: 3,
+    afterPrice: 30,
+    beforePrice: 30 },
+  { barcode: 'ITEM000005',
+    count: 3,
+    offset: 1,
+    giftCount: 0,
+    site: 5,
+    afterPrice: 9,
+    beforePrice: 13.5 } ];
 
-// console.log(allItemsInfo);
+let price={ totalPrice: 51, cutPrice: 7.5 }; 
 
-function countBarcodePirce(barcodeInfo){
-
-}
-
-function countOffsetNum(barcodeInfo){
-	let num = 0;
-	// if()
-}
-
-function getAllItemsSite(barcodeInfo){
-	return allItemsInfo.findIndex( (item)=>{
-		return item.barcode === barcodeInfo.barcode;
-	})
-}
-
-function countPrice(sameBarcodeSet){
-	let price = [0,0];
-	let totalPrice = 0;
-	let cutPrice = 0;
+function showInfo(sameBarcodeSet,price){
+	let info = '***<没钱赚商店>购物清单***\n';
+	let gift = [];
 	sameBarcodeSet.forEach( (item)=>{
-		let site = getAllItemsSite(item);
-		if( site !== -1 ){
-			item['site'] = site;
-			item['afterPrice'] = allItemsInfo[site].price * (item.count - item.offset);
-			item['beforePrice'] = allItemsInfo[site].price * item.count;
-			totalPrice += item.afterPrice;
-			cutPrice += item.beforePrice;
-		} 
+		info += '名称：' + allItemsInfo[item.site].name 
+			  + '，数量：' + item.count 
+			  + allItemsInfo[item.site].unit 
+			  + '，单价：' + allItemsInfo[item.site].price.toFixed(2) 
+			  + '(元)，'
+			  + '小计：' + item.afterPrice.toFixed(2)
+			  + '(元)\n';
+		if( item.giftCount !== -1 )
+			gift.push({barcode:item.barcode , giftCount:item.giftCount , site:item.site});
 	})
-	return {totalPrice:totalPrice, cutPrice:cutPrice - totalPrice};
-}
-
-function tagOffsetAndGift(sameBarcodeSet){
-	sameBarcodeSet.forEach( (item)=>{
-		let barcodePrice = 0;
-		let site = promotionsInfo[0].barcodes.indexOf(item.barcode);
-		if(  site === -1 ){
-			item['offset'] = 0;
-			item['gift'] = -1;
-		}
-		else{
-			item['offset'] = parseInt(item.count / 3);
-			item['gift'] = parseInt((item.count - item.offset * 3 ) / 2); 
-		}
+	info += '----------------------\n' + '挥泪赠送商品：\n';
+	gift.forEach( (item)=>{
+		info += '名称：' + allItemsInfo[item.site].name 
+		      + '，数量：' + item.giftCount + allItemsInfo[item.site].unit + '\n';
 	})
-	return sameBarcodeSet;
+	info += '----------------------\n';
+	info += '总计：' + price.totalPrice.toFixed(2) + '(元)\n' +
+            '节省：' + price.cutPrice.toFixed(2) + '(元)\n' +
+            '**********************';
+	return info;
 }
-let price=countPrice(tagOffsetAndGift(sameBarcodeSet)); 
-console.log(price,sameBarcodeSet);
-function countTotalPrice(sameBarcodeSet){
-	sameBarcodeSet = tagOffsetAndGift(sameBarcodeSet);
-	let price = countPrice(sameBarcodeSet);
-}
-
+console.log(showInfo(sameBarcodeSet,price))
 
 
 

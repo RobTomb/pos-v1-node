@@ -40,7 +40,6 @@ function getAllItemsSite(barcodeInfo){
 }
 
 function countPrice(sameBarcodeSet){
-	let price = [0,0];
 	let totalPrice = 0;
 	let cutPrice = 0;
 	sameBarcodeSet.forEach( (item)=>{
@@ -62,41 +61,50 @@ function tagOffsetAndGift(sameBarcodeSet){
 		let site = promotionsInfo[0].barcodes.indexOf(item.barcode);
 		if(  site === -1 ){
 			item['offset'] = 0;
-			item['gift'] = -1;
+			item['giftCount'] = -1;
 		}
 		else{
 			item['offset'] = parseInt(item.count / 3);
-			item['gift'] = parseInt((item.count - item.offset * 3 ) / 2); 
+			item['giftCount'] = parseInt((item.count - item.offset * 3 ) / 2 + item.offset); 
 		}
 	})
 	return sameBarcodeSet;
 }
+
 function countTotalPrice(sameBarcodeSet){
 	sameBarcodeSet = tagOffsetAndGift(sameBarcodeSet);
 	return countPrice(sameBarcodeSet);
 }
 
-
-
-
+function showInfo(sameBarcodeSet,price){
+	let info = '***<没钱赚商店>购物清单***\n';
+	let gift = [];
+	sameBarcodeSet.forEach( (item)=>{
+		info += '名称：' + allItemsInfo[item.site].name 
+			  + '，数量：' + item.count 
+			  + allItemsInfo[item.site].unit 
+			  + '，单价：' + allItemsInfo[item.site].price.toFixed(2) 
+			  + '(元)，'
+			  + '小计：' + item.afterPrice.toFixed(2)
+			  + '(元)\n';
+		if( item.giftCount !== -1 )
+			gift.push({barcode:item.barcode , giftCount:item.giftCount , site:item.site});
+	})
+	info += '----------------------\n' + '挥泪赠送商品：\n';
+	gift.forEach( (item)=>{
+		info += '名称：' + allItemsInfo[item.site].name 
+		      + '，数量：' + item.giftCount + allItemsInfo[item.site].unit + '\n';
+	})
+	info += '----------------------\n';
+	info += '总计：' + price.totalPrice.toFixed(2) + '(元)\n' +
+            '节省：' + price.cutPrice.toFixed(2) + '(元)\n' +
+            '**********************';
+	return info;
+}
 
 module.exports = function main(inputs) {
 	let sameBarcodeSet = countSameBarcode(inputs);
 	let price = countTotalPrice(sameBarcodeSet);
-
-	/*
-	outputs = '***<没钱赚商店>购物清单***\n' +
-            '名称：雪碧，数量：5瓶，单价：3.00(元)，小计：12.00(元)\n' +
-            '名称：荔枝，数量：2斤，单价：15.00(元)，小计：30.00(元)\n' +
-            '名称：方便面，数量：3袋，单价：4.50(元)，小计：9.00(元)\n' +
-            '----------------------\n' +
-            '挥泪赠送商品：\n' +
-            '名称：雪碧，数量：1瓶\n' +
-            '名称：方便面，数量：1袋\n' +
-            '----------------------\n' +
-            '总计：51.00(元)\n' +
-            '节省：7.50(元)\n' +
-            '**********************';
-	*/
-    console.log(price);
+	let info = showInfo(sameBarcodeSet,price);
+    console.log(info);
 };
