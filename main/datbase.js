@@ -1,3 +1,7 @@
+module.exports = {loadAllItems:loadAllItems , 
+    loadPromotions:loadPromotions }
+
+
 function loadAllItems() {
     return [
         {
