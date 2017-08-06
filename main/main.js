@@ -104,7 +104,26 @@ function showInfo(sameBarcodeSet,price){
 
 module.exports = function main(inputs) {
 	let sameBarcodeSet = countSameBarcode(inputs);
+	/*
+	sameBarcodeSet = [{} , { 
+		barcode: String,
+	    count: number } , ....]
+
+	 */
 	let price = countTotalPrice(sameBarcodeSet);
+	/*
+		sameBarcodeSet = [{} , { 
+			barcode: String,
+		    count: number,
+		    offset: number,
+		    giftCount: number,
+		    site: number,
+		    afterPrice: number,
+		    beforePrice: number } , ....]
+	 */
+	 /*
+	 price={ totalPrice: number, cutPrice: number };
+	  */
 	let info = showInfo(sameBarcodeSet,price);
     console.log(info);
 };
