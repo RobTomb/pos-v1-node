@@ -80,25 +80,16 @@ function showInfo(sameBarcodeSet,price){
 	let info = '***<没钱赚商店>购物清单***\n';
 	let gift = [];
 	sameBarcodeSet.forEach( (item)=>{
-		info += '名称：' + allItemsInfo[item.site].name 
-			  + '，数量：' + item.count 
-			  + allItemsInfo[item.site].unit 
-			  + '，单价：' + allItemsInfo[item.site].price.toFixed(2) 
-			  + '(元)，'
-			  + '小计：' + item.afterPrice.toFixed(2)
-			  + '(元)\n';
+		info +=	`名称：${allItemsInfo[item.site].name}，数量：${item.count}${allItemsInfo[item.site].unit}，单价：${allItemsInfo[item.site].price.toFixed(2)}(元)，小计：${item.afterPrice.toFixed(2)}(元)\n`;
 		if( item.giftCount !== -1 )
 			gift.push({barcode:item.barcode , giftCount:item.giftCount , site:item.site});
 	})
-	info += '----------------------\n' + '挥泪赠送商品：\n';
+	info += `----------------------\n挥泪赠送商品：\n`;
 	gift.forEach( (item)=>{
-		info += '名称：' + allItemsInfo[item.site].name 
-		      + '，数量：' + item.giftCount + allItemsInfo[item.site].unit + '\n';
+		info +=	`名称：${allItemsInfo[item.site].name}，数量：${item.giftCount}${allItemsInfo[item.site].unit}\n`;
 	})
-	info += '----------------------\n';
-	info += '总计：' + price.totalPrice.toFixed(2) + '(元)\n' +
-            '节省：' + price.cutPrice.toFixed(2) + '(元)\n' +
-            '**********************';
+	info += `----------------------\n`;
+	info += `总计：${price.totalPrice.toFixed(2)}(元)\n节省：${price.cutPrice.toFixed(2)}(元)\n**********************`;
 	return info;
 }
 
@@ -108,7 +99,6 @@ module.exports = function main(inputs) {
 	sameBarcodeSet = [{} , { 
 		barcode: String,
 	    count: number } , ....]
-
 	 */
 	let price = countTotalPrice(sameBarcodeSet);
 	/*
